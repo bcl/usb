@@ -40,3 +40,15 @@ func (dev *HidDevice) Write(b []byte) (int, error) {
 func (dev *HidDevice) Read(b []byte) (int, error) {
 	return 0, ErrUnsupportedPlatform
 }
+
+// SendFeatureReport sends a feature report to a HID device
+//
+func (dev *Device) SendFeatureReport(b []byte) (int, error) {
+	return 0, ErrUnsupportedPlatform
+}
+
+// GetFeatureReport retreives a feature report from a HID device
+//
+func (dev *Device) GetFeatureReport(b []byte) (int, error) {
+	return 0, ErrUnsupportedPlatform
+}
