@@ -19,36 +19,36 @@ package usb
 
 // HidDevice is a live HID USB connected device handle. On platforms that this file
 // implements, the type lacks the actual HID device and all methods are noop.
-type HidDevice struct {
+type hidDevice struct {
 	DeviceInfo // Embed the infos for easier access
 }
 
 // Close releases the HID USB device handle. On platforms that this file implements,
 // the method is just a noop.
-func (dev *HidDevice) Close() error {
+func (dev *hidDevice) Close() error {
 	return ErrUnsupportedPlatform
 }
 
 // Write sends an output report to a HID device. On platforms that this file
 // implements, the method just returns an error.
-func (dev *HidDevice) Write(b []byte) (int, error) {
+func (dev *hidDevice) Write(b []byte) (int, error) {
 	return 0, ErrUnsupportedPlatform
 }
 
 // Read retrieves an input report from a HID device. On platforms that this file
 // implements, the method just returns an error.
-func (dev *HidDevice) Read(b []byte) (int, error) {
+func (dev *hidDevice) Read(b []byte) (int, error) {
 	return 0, ErrUnsupportedPlatform
 }
 
 // SendFeatureReport sends a feature report to a HID device
 //
-func (dev *Device) SendFeatureReport(b []byte) (int, error) {
+func (dev *hidDevice) SendFeatureReport(b []byte) (int, error) {
 	return 0, ErrUnsupportedPlatform
 }
 
 // GetFeatureReport retreives a feature report from a HID device
 //
-func (dev *Device) GetFeatureReport(b []byte) (int, error) {
+func (dev *hidDevice) GetFeatureReport(b []byte) (int, error) {
 	return 0, ErrUnsupportedPlatform
 }

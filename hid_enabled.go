@@ -70,7 +70,7 @@ func enumerateHid(vendorID uint16, productID uint16) ([]DeviceInfo, error) {
 }
 
 // openHid connects to an HID device by its path name.
-func openHid(info DeviceInfo) (*hidDevice, error) {
+func openHid(info DeviceInfo) (*HidDevice, error) {
 	path := C.CString(info.Path)
 	defer C.free(unsafe.Pointer(path))
 
@@ -78,14 +78,14 @@ func openHid(info DeviceInfo) (*hidDevice, error) {
 	if device == nil {
 		return nil, errors.New("hidapi: failed to open device")
 	}
-	return &hidDevice{
+	return &HidDevice{
 		DeviceInfo: info,
 		device:     device,
 	}, nil
 }
 
-// hidDevice is a live HID USB connected device handle.
-type hidDevice struct {
+// HidDevice is a live HID USB connected device handle.
+type HidDevice struct {
 	DeviceInfo // Embed the infos for easier access
 
 	device *C.hid_device // Low level HID device to communicate through
@@ -93,7 +93,7 @@ type hidDevice struct {
 }
 
 // Close releases the HID USB device handle.
-func (dev *hidDevice) Close() error {
+func (dev *HidDevice) Close() error {
 	dev.lock.Lock()
 	defer dev.lock.Unlock()
 
@@ -108,7 +108,7 @@ func (dev *hidDevice) Close() error {
 //
 // Write will send the data on the first OUT endpoint, if one exists. If it does
 // not, it will send the data through the Control Endpoint (Endpoint 0).
-func (dev *hidDevice) Write(b []byte) (int, error) {
+func (dev *HidDevice) Write(b []byte) (int, error) {
 	// Abort if nothing to write
 	if len(b) == 0 {
 		return 0, nil
@@ -151,7 +151,7 @@ func (dev *hidDevice) Write(b []byte) (int, error) {
 }
 
 // Read retrieves an input report from a HID device.
-func (dev *hidDevice) Read(b []byte) (int, error) {
+func (dev *HidDevice) Read(b []byte) (int, error) {
 	// Aborth if nothing to read
 	if len(b) == 0 {
 		return 0, nil
@@ -197,7 +197,7 @@ func (dev *hidDevice) Read(b []byte) (int, error) {
 // passed to SendFeatureReport(): the Report ID (or 0x0, for devices
 // which do not use numbered reports), followed by the report data (16 bytes).
 // In this example, the length passed in would be 17.
-func (dev *hidDevice) SendFeatureReport(b []byte) (int, error) {
+func (dev *HidDevice) SendFeatureReport(b []byte) (int, error) {
 	// Abort if nothing to write
 	if len(b) == 0 {
 		return 0, nil
@@ -238,7 +238,7 @@ func (dev *hidDevice) SendFeatureReport(b []byte) (int, error) {
 // Set the first byte of []b to the Report ID of the report to be read. Make
 // sure to allow space for this extra byte in []b. Upon return, the first byte
 // will still contain the Report ID, and the report data will start in b[1].
-func (dev *hidDevice) GetFeatureReport(b []byte) (int, error) {
+func (dev *HidDevice) GetFeatureReport(b []byte) (int, error) {
 	// Abort if we don't have anywhere to write the results
 	if len(b) == 0 {
 		return 0, nil
